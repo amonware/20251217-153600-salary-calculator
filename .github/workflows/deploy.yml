@@ -1,0 +1,103 @@
+name: Build & Deploy to Cafe24 AI Hosting
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      subdomain:
+        description: 'Subdomain (owner_id-site_name)'
+        required: false
+      password:
+        description: 'Deploy password'
+        required: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  DEPLOY_API: http://1.226.82.154:7001
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest
+
+      - name: Build and push container image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Deploy to Cafe24 AI Hosting
+        run: |
+          # Use inputs or secrets for subdomain/password
+          SUBDOMAIN="${{ github.event.inputs.subdomain || secrets.SITE_SUBDOMAIN }}"
+          PASSWORD="${{ github.event.inputs.password || secrets.SITE_PASSWORD }}"
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+
+          # Fallback to legacy mode if no subdomain/password
+          if [ -z "$SUBDOMAIN" ] || [ -z "$PASSWORD" ]; then
+            echo "Using legacy mode (no subdomain/password)"
+            SITE_ID="${GITHUB_REPOSITORY##*/}"
+
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d "{\"site_id\": \"${SITE_ID}\", \"image\": \"${IMAGE}\", \"internal_port\": 3000}" \
+              "${{ env.DEPLOY_API }}/cicd/deploy/legacy")
+          else
+            echo "Deploying ${SUBDOMAIN} with image ${IMAGE}"
+
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d "{\"subdomain\": \"${SUBDOMAIN}\", \"image\": \"${IMAGE}\", \"password\": \"${PASSWORD}\", \"internal_port\": 3000}" \
+              "${{ env.DEPLOY_API }}/cicd/deploy")
+          fi
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Response: ${BODY}"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Deployment failed with HTTP ${HTTP_CODE}"
+            exit 1
+          fi
+
+          SITE_URL=$(echo "$BODY" | jq -r '.url')
+          echo "Deployed successfully!"
+          echo "Site URL: ${SITE_URL}"
+          echo "SITE_URL=${SITE_URL}" >> $GITHUB_ENV
+
+      - name: Deployment Summary
+        run: |
+          echo "## Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Site URL:** ${{ env.SITE_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest\`" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,12 @@
+{
+  "name": "salary-calculator",
+  "version": "1.0.0",
+  "description": "Korean Salary Calculator - 연봉 실수령액 계산기",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

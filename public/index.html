@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>연봉 계산기 - 실수령액 계산</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>연봉 실수령액 계산기</h1>
+      <p class="subtitle">2024년 4대보험/세금 기준</p>
+    </header>
+
+    <main>
+      <div class="input-section">
+        <div class="input-group">
+          <label for="salary">연봉 (원)</label>
+          <input type="text" id="salary" placeholder="예: 50000000" inputmode="numeric">
+          <div class="quick-buttons">
+            <button onclick="setSalary(30000000)">3천만</button>
+            <button onclick="setSalary(40000000)">4천만</button>
+            <button onclick="setSalary(50000000)">5천만</button>
+            <button onclick="setSalary(60000000)">6천만</button>
+            <button onclick="setSalary(80000000)">8천만</button>
+            <button onclick="setSalary(100000000)">1억</button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="dependents">부양가족 수 (본인 포함)</label>
+          <select id="dependents">
+            <option value="1">1명 (본인만)</option>
+            <option value="2">2명</option>
+            <option value="3">3명</option>
+            <option value="4">4명</option>
+            <option value="5">5명 이상</option>
+          </select>
+        </div>
+
+        <button class="calculate-btn" onclick="calculate()">계산하기</button>
+      </div>
+
+      <div class="result-section" id="result" style="display: none;">
+        <div class="summary">
+          <div class="summary-item highlight">
+            <span class="label">월 실수령액</span>
+            <span class="value" id="netMonthly">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">연 실수령액</span>
+            <span class="value" id="netAnnual">0</span>
+          </div>
+        </div>
+
+        <div class="details">
+          <h3>공제 내역 (월 기준)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>금액</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>월 급여</td>
+                <td id="grossMonthly">0</td>
+              </tr>
+              <tr class="deduction">
+                <td>국민연금</td>
+                <td id="nationalPension">0</td>
+              </tr>
+              <tr class="deduction">
+                <td>건강보험</td>
+                <td id="healthInsurance">0</td>
+              </tr>
+              <tr class="deduction">
+                <td>장기요양보험</td>
+                <td id="longTermCare">0</td>
+              </tr>
+              <tr class="deduction">
+                <td>고용보험</td>
+                <td id="employmentInsurance">0</td>
+              </tr>
+              <tr class="subtotal">
+                <td>4대보험 합계</td>
+                <td id="totalInsurance">0</td>
+              </tr>
+              <tr class="deduction">
+                <td>소득세</td>
+                <td id="incomeTax">0</td>
+              </tr>
+              <tr class="deduction">
+                <td>지방소득세</td>
+                <td id="localIncomeTax">0</td>
+              </tr>
+              <tr class="total">
+                <td>총 공제액</td>
+                <td id="totalDeductions">0</td>
+              </tr>
+              <tr class="net">
+                <td><strong>실수령액</strong></td>
+                <td id="netSalary"><strong>0</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>* 본 계산기는 참고용이며 실제 급여와 다를 수 있습니다.</p>
+      <p>* 간이세액표 기준 근사치로 계산됩니다.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
