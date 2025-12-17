@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f7dc6f 0%, #f39c12 100%);
   min-height: 100vh;
   padding: 20px;
 }
@@ -18,7 +18,7 @@ body {
 
 header {
   text-align: center;
-  color: white;
+  color: #5d4e37;
   margin-bottom: 30px;
 }
 
@@ -65,7 +65,7 @@ header .subtitle {
 .input-group input:focus,
 .input-group select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #f39c12;
 }
 
 .quick-buttons {
@@ -86,9 +86,9 @@ header .subtitle {
 }
 
 .quick-buttons button:hover {
-  background: #667eea;
+  background: #f39c12;
   color: white;
-  border-color: #667eea;
+  border-color: #f39c12;
 }
 
 .calculate-btn {
@@ -97,7 +97,7 @@ header .subtitle {
   font-size: 1.2rem;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -106,7 +106,7 @@ header .subtitle {
 
 .calculate-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(243, 156, 18, 0.4);
 }
 
 .result-section {
@@ -131,7 +131,7 @@ header .subtitle {
 }
 
 .summary-item.highlight {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f39c12 0%, #d35400 100%);
   color: white;
 }
 
